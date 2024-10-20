@@ -7,7 +7,7 @@ const connectDB = require("./db");
 const path = require("path");
 const { sessionManagement } = require("./utils/sessionConnection.js");
 const router = require("./router/route.js");
-const { checkIsValid } = require("./middleware.js");
+const { checkIsValid,isLogin,isAuth } = require("./middleware.js");
 
 connectDB({ poolSize: 10 });
 app.use(express.json());
@@ -20,14 +20,14 @@ sessionManagement(app);
 app.use("/api", checkIsValid, router);
 
 app.use("/", express.static(path.join(__dirname, "./public/build")));
-app.get("/",(req,res) => {
+app.get("/",isAuth,(req,res) => {
   res.sendFile(path.join(__dirname, "./public/build", "index.html"));
 })
-app.get("/signin",(req,res) => {
+app.get("/signin",isLogin,(req,res) => {
   res.sendFile(path.join(__dirname, "./public/build", "index.html"));
 })
 
-app.get("/signup",(req,res) => {
+app.get("/signup",isLogin,(req,res) => {
   res.sendFile(path.join(__dirname, "./public/build", "index.html"));
 })
 app.get("/error",(req,res) => {
@@ -37,7 +37,6 @@ app.get("/error",(req,res) => {
 app.use("/",(req,res,next) => {
   res.redirect('/error');
 })
-
 app.listen(1338, () => {
   console.log("listening on 1338");
 });
